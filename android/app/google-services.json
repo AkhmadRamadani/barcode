@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "880196603225",
+    "firebase_url": "https://exugm-01.firebaseio.com",
+    "project_id": "exugm-01",
+    "storage_bucket": "exugm-01.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:880196603225:android:ea10dc83acf61666569048",
+        "android_client_info": {
+          "package_name": "com.exugm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "880196603225-b2u4bi8n3s5959pib6b9is086bc96lkp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.exugm",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "880196603225-p6n5t1s0rec22ku7386ho3triapmisng.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCUEteSaOa-pS3b7ugbrnyLJkChOtWqds"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "880196603225-p6n5t1s0rec22ku7386ho3triapmisng.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
