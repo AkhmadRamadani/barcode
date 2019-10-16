@@ -16,14 +16,14 @@ export default class Register extends React.Component {
             image: null,
             name: '',
             angkatan: '',
-            noHP: ''
+            noHP: '',
+            loading: false,
+            user_id: Math.random().toString(36).substring(2, 100) + Math.random().toString(36).substring(2, 100)
         }
 
         this.method = {
             changeState: this._changeState.bind(this),
             pickImage: this._imagePicker.bind(this),
-            sendData: this._sendData.bind(this),
-            // sendToFirebase: this._sendToFirebase.bind(this),
             uploadToFirebase: this._submitForm.bind(this)
         }
     }
@@ -51,100 +51,40 @@ export default class Register extends React.Component {
         });
     };
 
-    _sendData() {
-        this.props.navigation.navigate('Main', {
-            dataDiri: {
-                image: this.state.image,
-                name: this.state.name.toString(),
-                email: this.state.email.toString(),
-                angkatan: this.state.angkatan.toString(),
-                noHP: this.state.noHP.toString()
-            }
-        })
-    }
-
-    _sendToFirebase(filename) {
-        firebase.database().ref('Member/').push({
-            'absent': false,
-            'email': this.state.email.toString(),
-            'generation': this.state.angkatan.toString(),
-            'name': this.state.name.toString(),
-            'phone': this.state.noHP.toString(),
-            'photo': filename
-        }).then((data) => {
-            console.log("DATA::", data);
-
-            alert('Success');
-
-            this.props.navigation.navigate('Main', {
-                dataDiri: {
-                    image: filename,
-                    name: this.state.name.toString(),
-                    email: this.state.email.toString(),
-                    angkatan: this.state.angkatan.toString(),
-                    noHP: this.state.noHP.toString()
-                }
-            })
-
-        }).catch((error) => {
-            console.log(error);
-
-            alert('Error')
-        })
-    }
-
-    _uploadToFirebase() {
-
-        var ext = this.state.image.split('.').pop()
-        var filename = Math.random().toString(36).substring(2, 100) + Math.random().toString(36).substring(2, 100)
-
-        firebase
-            .storage()
-            .ref('/photoprofile/' + filename)
-            .putFile(this.state.image)
-            .on(
-                firebase.storage.TaskEvent.STATE_CHANGED,
-                snapshot => {
-
-                    if (snapshot.state == firebase.storage.TaskState.SUCCESS) {
-                        console.log("Download URL::", snapshot.downloadURL);
-                        this._sendToFirebase(snapshot.downloadURL)
-                    }
-
-                }, error => {
-                    console.log(error);
-
-                }
-            )
-    }
-
     _submitForm = () => {
 
         let fileName = Math.random().toString(36).substring(2, 100) + Math.random().toString(36).substring(2, 100);
+       
+        this.setState({
+            loading: true
+        })
 
-        firebase.storage().ref(`/photoprofile/${fileName}`).putFile(this.state.image)
+        firebase.storage().ref(`/photoprofile/${this.state.user_id.toString()}`).putFile(this.state.image)
             .then(response => {
                 console.log("Response:", response)
 
                 if (response.state === firebase.storage.TaskState.SUCCESS) {
 
-                    firebase.database().ref('Member/').push({
+                    firebase.database().ref('Member/'+this.state.user_id.toString()).set({
                         'absent': false,
                         'email': this.state.email.toString(),
                         'generation': this.state.angkatan.toString(),
                         'name': this.state.name.toString(),
                         'phone': this.state.noHP.toString(),
-                        'photo': response.downloadURL
+                        'photo': response.downloadURL,
+                        'user_id': this.state.user_id.toString(),
                     }).then((data) => {
-                        console.log("DATA::", data.key);
-
+                        this.setState({
+                            loading: false
+                        })
                         this.props.navigation.navigate('Main', {
                             dataDiri: {
-                                image: response.downloadURL,
+                                image: this.state.image,
                                 name: this.state.name.toString(),
                                 email: this.state.email.toString(),
                                 angkatan: this.state.angkatan.toString(),
-                                noHP: this.state.noHP.toString()
+                                noHP: this.state.noHP.toString(),
+                                user_id: this.state.user_id.toString(),
                             }
                         })
                         

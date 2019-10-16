@@ -1,6 +1,7 @@
 import * as React from 'react'
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Dimensions, KeyboardAvoidingView, Keyboard } from 'react-native'
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Dimensions, KeyboardAvoidingView, ActivityIndicator } from 'react-native'
 import InputText from './components/InputText'
+import Modal from "react-native-modal";
 
 const { width, height } = Dimensions.get('window');
 
@@ -18,10 +19,16 @@ export default class RegisterView extends React.Component {
 
     render(){
         return (
-        <View style={{flex: 1, paddingHorizontal: 16, paddingVertical: 10}}>
 
-            <KeyboardAvoidingView style={{flex: 1}} behavior={"padding"} enabled>
-
+            <KeyboardAvoidingView style={{flex: 1,paddingHorizontal: 16, paddingVertical: 10}} behavior={"padding"} enabled>
+                
+                <Modal
+                    style={{justifyContent:'center'}}
+                    isVisible={this.props.state.loading}
+                >
+                    <ActivityIndicator style={{position:"absolute",alignSelf:'center'}} size={'large'} color={'white'}/>
+                </Modal>
+                
                 <View style={{paddingHorizontal: 2}}>
                     <Text style={{fontWeight: 'bold', fontSize: 32}}>Sign Up</Text>    
                 </View> 
@@ -53,58 +60,77 @@ export default class RegisterView extends React.Component {
 
                 </View>
                 
-                <View style={{padding: 16, alignItems:'center'}}>
+                <View style={{padding: 16, height: width / 1.3,justifyContent:'space-between',alignItems:'center'}}>
 
                     <InputText
                         placeholder={"Name"}
                         background={'#fff'}
-                        style={{ marginBottom: 16 }}
+                        style={{  }}
                         onChangeText={(text) => this.props.method.changeState('name', text)}
                         />
 
                     <InputText
                         placeholder={"Phone number"}
                         keyboardType={'phone-pad'}
-                        style={{ marginBottom: 16 }}
+                        style={{ }}
                         onChangeText={(text) => this.props.method.changeState('noHP', text)}
                         />
 
                     <InputText
                         placeholder={"Email"}
                         keyboardType={"email-address"}
-                        style={{ marginBottom: 16 }}
+                        style={{  }}
                         onChangeText={(text) => this.props.method.changeState('email', text)}
                         />
 
                     <InputText
                         placeholder={"Generation"}
                         background={'#fff'}
-                        style={{ marginBottom: 16 }}
+                        style={{}}
                         onChangeText={(text) => this.props.method.changeState('angkatan', text)}
                         />
 
                 </View>
-                        
                 
-                <TouchableOpacity 
-                    style={{alignSelf:'center',
-                            justifyContent:'center',
-                            alignItems:'center',
-                            width: width / 1.5, 
-                            minHeight: 50,
-                            marginTop: 16,
-                            elevation: 3, 
-                            borderRadius: 24, 
-                            backgroundColor: '#F2C94C'}}
-                    onPress={()=> this.props.method.uploadToFirebase()}>
+                {
+                    this.props.state.name == '' || this.props.state.angkatan == '' || this.props.state.email == '' || this.props.state.noHP == '' || this.props.state.image == null
+                    ?
+                    <TouchableOpacity 
+                        style={{alignSelf:'center',
+                                justifyContent:'center',
+                                alignItems:'center',
+                                width: width / 1.5, 
+                                height: 50,
+                                marginTop: 16,
+                                elevation: 3, 
+                                borderRadius: 24, 
+                                backgroundColor: '#F2f2f2'}}>
 
-                    <Text style={{fontSize: 24, fontWeight: 'bold'}} children={'Next'} />
+                        <Text style={{fontSize: 24, fontWeight: 'bold'}} children={'Next'} />
 
-                </TouchableOpacity>
+                    </TouchableOpacity>
+                    :
+                    <TouchableOpacity 
+                        style={{alignSelf:'center',
+                                justifyContent:'center',
+                                alignItems:'center',
+                                width: width / 1.5, 
+                                height: 50,
+                                marginTop: 16,
+                                elevation: 3, 
+                                borderRadius: 24, 
+                                backgroundColor: '#F2C94C'}}
+                        onPress={()=> this.props.method.uploadToFirebase()}>
 
+                        <Text style={{fontSize: 24, fontWeight: 'bold'}} children={'Next'} />
+
+                    </TouchableOpacity>
+                }
+                
+                
+                
             </KeyboardAvoidingView>
             
-        </View>
         )
     }
 
@@ -118,5 +144,10 @@ const styles = props => StyleSheet.create({
         backgroundColor: '#f2f2f2',
         elevation: 10,
         borderRadius: 14,
+    },
+    modal: {
+        height: 120,
+        backgroundColor: 'white',
+        borderColor: 'rgba(0, 0, 0, 0.1)',
     },
 });

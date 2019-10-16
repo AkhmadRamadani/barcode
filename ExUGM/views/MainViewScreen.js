@@ -1,7 +1,10 @@
 import * as React from 'react'
-import { View, Text, TextInput, Dimensions, Image, TouchableHighlight, StyleSheet } from 'react-native'
+import { View, Text, TextInput, Dimensions, Image, TouchableOpacity, StyleSheet } from 'react-native'
 import QRCode from "react-native-qrcode-svg";
 import Modal from 'react-native-modal';
+import { captureScreen } from "react-native-view-shot";
+import RNFS from "react-native-fs"
+import CameraRoll from "@react-native-community/cameraroll";
 
 const { width, height } = Dimensions.get('window');
 
@@ -11,71 +14,57 @@ export default class MainViewScreen extends React.Component {
         super(props)
 
         this.state = {
-            modalVisibility: false
+            imageUri: null
         }
 
     }
 
-    _modalAction = () => {
-        this.setState({ modalVisibility: !this.state.modalVisibility });
-    };
+    _takeScreenshot(){
+        captureScreen({
+            //either png or jpg or webm (Android). Defaults to png
+            format: "jpg",
+            //quality 0.0 - 1.0 (default). (only available on lossy formats like jpg)
+            quality: 0.8
+          })
+          .then(
+            //callback function to get the result URL of the screnshot
+            uri => [alert('success'),console.log('uri',uri)
+            ,CameraRoll.saveToCameraRoll(uri).then(alert('Success')),
+        ],
+            
+            error => console.error("Oops, Something Went Wrong", error)
+          );
+    }
+
+    componentDidMount(){
+        
+    }
 
     render(){
         return (
-            <View style={{flex: 1, paddingVertical: 10, paddingHorizontal: 16}}>
-                
-                <Modal
-                    isVisible={this.state.modalVisibility}
-                    onBackButtonPress={this._modalAction}
-                    onBackdropPress={this._modalAction}
-                >
-                        <View style={{ 
-                                    width: width/1, 
-                                    height: width/1, 
-                                    backgroundColor:'#fff',
-                                    elevation: 15,
-                                    alignSelf:'center',
-                                    borderRadius: 20,
-                                    alignItems:'center', 
-                                    justifyContent:'center'}}>
-                        
-                            <QRCode 
-                                size={300}
-                                value={JSON.stringify(this.props.state.dataDiri)}
-                            />
-                            
-                        </View>
-
-                </Modal>
-
-
-                <View style={{paddingHorizontal: 2, flexDirection: 'row',alignItems:'center'}}>
-                    <Text style={{fontWeight: 'bold', fontSize: 32, color: '#000'}}>QR Code</Text>    
-                </View> 
-                
-                <View style={{alignSelf:'center',justifyContent:'center', marginTop: width/5}}>
-                  
-                    <View style={{width:55, 
-                                height: 55, 
+            <View style={{flex: 1, paddingVertical: 10, paddingHorizontal: 16, justifyContent:'center', alignItems:'center'}}>
+                <TouchableOpacity activeOpacity={1} onPress={()=> alert('Touched')}>
+                    <View style={{width:100, 
+                                height: 100, 
                                 backgroundColor: '#fff', 
                                 zIndex:50, 
                                 elevation: 15, 
                                 borderRadius: 50, 
                                 alignSelf:'center'}}>
 
-                        <Image style={{width: 55, height: 55, borderRadius: 50}} source={{uri: this.props.state.dataDiri.image}} />
+                        <Image style={{width: 100, height: 100, borderRadius: 50}} source={{uri: this.props.state.dataDiri.image}} />
 
                     </View>
                     
-                    <View style={{width: width/1.5,
-                                 height: width/3,
-                                 paddingTop: 30,
-                                 alignItems:'center' ,
-                                 backgroundColor:'#fff',
-                                 elevation: 15,
-                                 marginTop: -width/12, 
-                                 borderBottomLeftRadius: 20, 
-                                 borderBottomRightRadius: 20}}>
+                    <View style={{width: width/1.2,
+                                    height: width/2.5,
+                                    paddingTop: 50,
+                                    alignItems:'center' ,
+                                    backgroundColor:'#fff',
+                                    elevation: 15,
+                                    marginTop: -width/8,
+                                    borderRadius: 30    
+                                }}>
 
                         <Text style={{fontSize: 24, fontWeight: 'bold'}}>{this.props.state.dataDiri.name}</Text>
 
@@ -87,29 +76,33 @@ export default class MainViewScreen extends React.Component {
 
                     </View>
 
-                    <TouchableHighlight style={{ 
-                                width: width/1.5, 
-                                height: width/1.5, 
+                    <View style={{ 
+                                width: width/1.2, 
+                                height: width/1.2, 
                                 backgroundColor:'#fff',
                                 elevation: 15,
-                                borderTopRightRadius: 20,
-                                borderTopLeftRadius: 20,
+                                borderRadius: 30,
                                 alignItems:'center', 
                                 justifyContent:'center'}}
-                                onPress={()=>this._modalAction()}>
+                                // onLongPress={()=>this._takeScreenshot()}
+                                
+                                >
                     
                         <QRCode 
-                            size={200}
+                            size={250}
+                            logo={this.props.state.dataDiri.image}
+                            logoSize={50}
+                            getRef={(c) => this.svg = c}
+                            logoBorderRadius={50}
                             value={JSON.stringify(this.props.state.dataDiri)}
                         />
                         
-                    </TouchableHighlight>
-                </View>
+                    </View>
+                </TouchableOpacity>
             </View>
         )
     }
 }
-
 
 const styles = props => StyleSheet.create({
     modal: {
